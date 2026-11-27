@@ -6,14 +6,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>天津大学福州国际学院实录：巨坑！千万别来！——一位2025级研究生的血泪控诉</title>
-  <meta name="description" content="README.md 原文网页呈现：一位2025级研究生关于天津大学福州国际学院的个人经历叙述和主观感受。本文不作为事实认定，请多方核实。">
+  <meta name="description" content="README.md 原文网页呈现：一位2025级研究生的个人经历叙述和主观感受。本文不作为事实认定，请多方核实。">
   <meta name="robots" content="index,follow,max-image-preview:large">
-  <meta name="theme-color" content="#f7f5f0">
   <link rel="canonical" href="https://keilymarfriel-png.github.io/TJUFZ/">
   <meta property="og:type" content="article">
   <meta property="og:locale" content="zh_CN">
-  <meta property="og:title" content="天津大学福州国际学院实录：巨坑！千万别来！——一位2025级研究生的血泪控诉">
-  <meta property="og:description" content="文章内容与仓库 README.md 一致；相关陈述为作者个人经历和主观感受，请读者多方核实。">
   <meta property="og:url" content="https://keilymarfriel-png.github.io/TJUFZ/">
   <style>
     :root{color-scheme:light;--ink:#252525;--muted:#666;--paper:#fff;--line:#e7e2d9;--accent:#9b3429;--bg:#f7f5f0}
@@ -29,8 +26,47 @@
   {{ readme_markdown | markdownify }}
 </main>
 <script>
-  // Keep the README table-of-contents links aimed at their corresponding section headings.
-  document.querySelectorAll('main h2').forEach((heading,index)=>{heading.id='s'+(index+1)});
+  (()=>{
+    const main=document.querySelector('main');
+    const marker='2026的国奖评审中，发表于';
+    // The eleventh section was plain text rather than a Markdown heading. Split its
+    // existing paragraph at the next paragraph's opening words, preserving all text.
+    const candidate=[...main.querySelectorAll('p')].find(p=>p.textContent.trim().startsWith('十一、如果你和学院关系好'));
+    if(candidate){
+      const original=candidate.textContent.trim();
+      const splitAt=original.indexOf(marker);
+      if(splitAt>0){
+        const heading=document.createElement('h2');
+        heading.textContent=original.slice(0,splitAt).trim();
+        const following=document.createElement('p');
+        following.textContent=original.slice(splitAt).trim();
+        candidate.replaceWith(heading,following);
+      }else{
+        const heading=document.createElement('h2');
+        heading.textContent=original;
+        candidate.replaceWith(heading);
+      }
+    }
+    // Generate the displayed contents list from section headings, so it always
+    // contains all eleven sections and its links point to the rendered headings.
+    const tocHeading=[...main.querySelectorAll('h2')].find(h=>h.textContent.trim()==='目录');
+    const tocList=tocHeading?.nextElementSibling;
+    if(tocList && (tocList.tagName==='UL'||tocList.tagName==='OL')){
+      const sections=[...main.querySelectorAll('h2')].filter(h=>h!==tocHeading);
+      sections.forEach((heading,index)=>{
+        heading.id='section-'+(index+1);
+        heading.setAttribute('tabindex','-1');
+      });
+      tocList.replaceChildren(...sections.map((heading,index)=>{
+        const li=document.createElement('li');
+        const link=document.createElement('a');
+        link.href='#section-'+(index+1);
+        link.textContent=heading.textContent;
+        li.append(link);
+        return li;
+      }));
+    }
+  })();
 </script>
 </body>
 </html>
